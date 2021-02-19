@@ -8,6 +8,7 @@ import MoviesList from '../components/MoviesList';
 class MoviesPage extends Component {
   state = {
     movies: [],
+    error: null,
   };
   async componentDidMount() {
     const { query } = parseQueryString(this.props.location.search);
@@ -25,7 +26,12 @@ class MoviesPage extends Component {
   }
 
   handleFetchhMovies = query => {
-    fetchMoviesByQuery(query).then(movies => this.setState({ movies }));
+    fetchMoviesByQuery(query).then(movies => {
+      if (movies.length === 0) {
+        return this.setState({ movies: [], error: 'Нет результатов' });
+      }
+      this.setState({ movies, error: null });
+    });
   };
 
   handleQueryFromSearchbar = query => {
@@ -36,15 +42,18 @@ class MoviesPage extends Component {
   };
 
   render() {
-    const { movies, query } = this.state;
+    const { movies, error } = this.state;
+    const { query } = parseQueryString(this.props.location.search);
     return (
       <>
         <SearchBar onSubmit={this.handleQueryFromSearchbar} />
-        {movies.length > 0 ? (
+        {!error ? (
           <MoviesList movies={movies} />
-        ) : query ? (
-          <h1>Не будем материться...</h1>
-        ) : null}
+        ) : (
+          <h1>
+            Нет совпадений по запросу <i>"{query}"</i>
+          </h1>
+        )}
         <NotificationContainer />
       </>
     );

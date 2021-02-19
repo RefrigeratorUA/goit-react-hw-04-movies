@@ -16,6 +16,7 @@ const NotificationContainer = ({ position = 'top-right', autoClose = 3000 }) => 
       transition={Zoom}
       pauseOnFocusLoss
       rtl={false}
+      limit={1}
     />
   );
 };
